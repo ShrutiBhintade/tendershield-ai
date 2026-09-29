@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Activity,
@@ -29,7 +29,12 @@ type AuditEvent = {
   actor: string;
   role: "AI Engine" | "Procurement Officer" | "System";
   entity: string;
-  entityType: "Document" | "Bidder" | "Tender" | "Risk Alert" | "Verification";
+  entityType:
+    | "Document"
+    | "Bidder"
+    | "Tender"
+    | "Risk Alert"
+    | "Verification";
   result: "Success" | "Warning" | "Critical" | "Info";
   reference: string;
 };
@@ -200,15 +205,112 @@ export default function AuditTrailPage() {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
   const [resultFilter, setResultFilter] = useState("All");
-  const [selectedEvent, setSelectedEvent] = useState<AuditEvent | null>(null);
+  const [selectedEvent, setSelectedEvent] =
+    useState<AuditEvent | null>(null);
+
+  const [liveAuditEvents, setLiveAuditEvents] =
+    useState<AuditEvent[]>(auditEvents);
+
+  useEffect(() => {
+    try {
+      const storedEvents = JSON.parse(
+        window.localStorage.getItem("tendershield_audit_events") || "[]"
+      );
+
+      if (!Array.isArray(storedEvents) || storedEvents.length === 0) {
+        setLiveAuditEvents(auditEvents);
+        return;
+      }
+
+      const rejectionEvents: AuditEvent[] = storedEvents
+        .filter(
+          (event: {
+            id?: string;
+            timestamp?: string;
+            action?: string;
+            officer?: string;
+            bidder?: string;
+            tender?: string;
+            reason?: string;
+            details?: string;
+            riskScore?: string;
+            noticeGenerated?: boolean;
+          }) =>
+            event &&
+            event.id &&
+            event.timestamp &&
+            event.action &&
+            event.bidder &&
+            event.tender
+        )
+        .map(
+          (event: {
+            id: string;
+            timestamp: string;
+            action: string;
+            officer: string;
+            bidder: string;
+            tender: string;
+            reason: string;
+            details: string;
+            riskScore: string;
+            noticeGenerated: boolean;
+          }) => ({
+            id: event.id,
+            timestamp: new Date(event.timestamp).toLocaleString("en-IN", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            action: event.action,
+            description:
+              `${event.reason}. ${event.details}` +
+              ` Risk score at decision: ${event.riskScore}/100.` +
+              (event.noticeGenerated
+                ? " AI-generated GeM notice draft was prepared."
+                : ""),
+            actor: event.officer || "Procurement Officer",
+            role: "Procurement Officer",
+            entity: event.bidder,
+            entityType: "Bidder",
+            result: "Critical",
+            reference: event.tender,
+          })
+        );
+
+      /*
+       * Remove duplicate event IDs.
+       * This protects the audit table if the same browser event
+       * is accidentally written more than once.
+       */
+      const uniqueRejectionEvents = Array.from(
+        new Map(
+          rejectionEvents.map((event) => [event.id, event])
+        ).values()
+      );
+
+      setLiveAuditEvents([
+        ...uniqueRejectionEvents,
+        ...auditEvents,
+      ]);
+    } catch (error) {
+      console.error("Failed to load audit events:", error);
+      setLiveAuditEvents(auditEvents);
+    }
+  }, []);
 
   const filteredEvents = useMemo(() => {
-    return auditEvents.filter((event) => {
+    return liveAuditEvents.filter((event) => {
+      const searchTerm = search.toLowerCase().trim();
+
       const matchesSearch =
-        event.action.toLowerCase().includes(search.toLowerCase()) ||
-        event.description.toLowerCase().includes(search.toLowerCase()) ||
-        event.entity.toLowerCase().includes(search.toLowerCase()) ||
-        event.reference.toLowerCase().includes(search.toLowerCase());
+        !searchTerm ||
+        event.action.toLowerCase().includes(searchTerm) ||
+        event.description.toLowerCase().includes(searchTerm) ||
+        event.entity.toLowerCase().includes(searchTerm) ||
+        event.reference.toLowerCase().includes(searchTerm);
 
       const matchesRole =
         roleFilter === "All" || event.role === roleFilter;
@@ -218,7 +320,7 @@ export default function AuditTrailPage() {
 
       return matchesSearch && matchesRole && matchesResult;
     });
-  }, [search, roleFilter, resultFilter]);
+  }, [liveAuditEvents, search, roleFilter, resultFilter]);
 
   const navigateToEntity = (event: AuditEvent) => {
     if (event.entityType === "Bidder") {
@@ -242,6 +344,7 @@ export default function AuditTrailPage() {
       <div className="border-b border-amber-200 bg-amber-50 px-6 py-2.5">
         <div className="mx-auto flex max-w-[1600px] items-center gap-2 text-sm text-amber-800">
           <Zap className="h-4 w-4" />
+
           <span>
             <strong>Demo Mode:</strong> Audit events shown below are
             representative system records for the TenderShield AI prototype.
@@ -321,6 +424,7 @@ export default function AuditTrailPage() {
                 <h2 className="font-semibold text-slate-950">
                   Procurement Integrity Timeline
                 </h2>
+
                 <p className="mt-1 max-w-3xl text-sm leading-6 text-slate-500">
                   Every significant system action is recorded with its
                   timestamp, actor, entity, outcome and reference ID.
@@ -365,7 +469,13 @@ export default function AuditTrailPage() {
             <FilterSelect
               value={resultFilter}
               onChange={setResultFilter}
-              options={["All", "Success", "Warning", "Critical", "Info"]}
+              options={[
+                "All",
+                "Success",
+                "Warning",
+                "Critical",
+                "Info",
+              ]}
             />
 
             <div className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-500">
@@ -383,6 +493,7 @@ export default function AuditTrailPage() {
                 <h2 className="font-semibold text-slate-950">
                   Activity Records
                 </h2>
+
                 <p className="mt-1 text-xs text-slate-500">
                   Chronological record of procurement intelligence events
                 </p>
@@ -425,6 +536,7 @@ export default function AuditTrailPage() {
                           <Clock3 className="h-4 w-4 text-slate-400" />
                           {event.timestamp}
                         </div>
+
                         <p className="mt-1 pl-6 text-[11px] text-slate-400">
                           {event.id}
                         </p>
@@ -434,6 +546,7 @@ export default function AuditTrailPage() {
                         <p className="text-sm font-semibold text-slate-900">
                           {event.action}
                         </p>
+
                         <p className="mt-1 max-w-[360px] text-xs leading-5 text-slate-500">
                           {event.description}
                         </p>
@@ -455,6 +568,7 @@ export default function AuditTrailPage() {
                             <p className="text-sm font-medium text-slate-800">
                               {event.actor}
                             </p>
+
                             <p className="text-[11px] text-slate-400">
                               {event.role}
                             </p>
@@ -465,10 +579,12 @@ export default function AuditTrailPage() {
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
                           <EntityIcon className="h-4 w-4 text-slate-400" />
+
                           <div>
                             <p className="max-w-[210px] truncate text-sm font-medium text-slate-800">
                               {event.entity}
                             </p>
+
                             <p className="text-[11px] text-slate-400">
                               {event.entityType}
                             </p>
@@ -513,9 +629,11 @@ export default function AuditTrailPage() {
             {filteredEvents.length === 0 && (
               <div className="px-6 py-16 text-center">
                 <Search className="mx-auto h-8 w-8 text-slate-300" />
+
                 <h3 className="mt-3 font-semibold text-slate-800">
                   No audit events found
                 </h3>
+
                 <p className="mt-1 text-sm text-slate-500">
                   Try changing your search or filters.
                 </p>
@@ -571,9 +689,11 @@ export default function AuditTrailPage() {
                   <p className="text-xs font-semibold uppercase tracking-wider text-indigo-600">
                     Audit Event
                   </p>
+
                   <h2 className="mt-1 text-xl font-bold text-slate-950">
                     {selectedEvent.action}
                   </h2>
+
                   <p className="mt-1 font-mono text-xs text-slate-400">
                     {selectedEvent.id}
                   </p>
@@ -598,9 +718,12 @@ export default function AuditTrailPage() {
               >
                 <div className="flex items-center gap-2">
                   {(() => {
-                    const Icon = resultStyles[selectedEvent.result].icon;
+                    const Icon =
+                      resultStyles[selectedEvent.result].icon;
+
                     return <Icon className="h-5 w-5" />;
                   })()}
+
                   <span className="font-semibold">
                     {selectedEvent.result} Event
                   </span>
@@ -651,6 +774,7 @@ export default function AuditTrailPage() {
                 <div className="mt-3 space-y-2 text-xs text-slate-600">
                   <div className="flex justify-between gap-4">
                     <span>Event status</span>
+
                     <span className="font-medium text-emerald-600">
                       Recorded
                     </span>
@@ -658,6 +782,7 @@ export default function AuditTrailPage() {
 
                   <div className="flex justify-between gap-4">
                     <span>Source</span>
+
                     <span className="font-medium">
                       TenderShield AI Intelligence Layer
                     </span>
@@ -665,6 +790,7 @@ export default function AuditTrailPage() {
 
                   <div className="flex justify-between gap-4">
                     <span>Audit sequence</span>
+
                     <span className="font-mono font-medium">
                       #{selectedEvent.id.replace("AUD-2026-", "")}
                     </span>
@@ -703,7 +829,10 @@ function KpiCard({
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-medium text-slate-500">{title}</p>
+          <p className="text-sm font-medium text-slate-500">
+            {title}
+          </p>
+
           <p className="mt-2 text-3xl font-bold tracking-tight text-slate-950">
             {value}
           </p>
@@ -714,7 +843,9 @@ function KpiCard({
         </div>
       </div>
 
-      <p className="mt-3 text-xs font-medium text-slate-400">{subtitle}</p>
+      <p className="mt-3 text-xs font-medium text-slate-400">
+        {subtitle}
+      </p>
     </div>
   );
 }
@@ -759,6 +890,7 @@ function DetailRow({
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
         {label}
       </p>
+
       <p
         className={
           "mt-1 text-sm leading-6 text-slate-800 " +
@@ -786,9 +918,13 @@ function IntegrityCard({
         <Icon className="h-5 w-5 text-slate-700" />
       </div>
 
-      <h3 className="mt-4 font-semibold text-slate-950">{title}</h3>
+      <h3 className="mt-4 font-semibold text-slate-950">
+        {title}
+      </h3>
 
-      <p className="mt-1 text-sm leading-6 text-slate-500">{text}</p>
+      <p className="mt-1 text-sm leading-6 text-slate-500">
+        {text}
+      </p>
     </div>
   );
 }

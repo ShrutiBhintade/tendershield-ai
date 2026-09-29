@@ -2,14 +2,18 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
   CheckCircle2,
   FileCheck2,
+  FilePenLine,
   FileText,
   ShieldCheck,
+  Sparkles,
   UserCheck,
+  X,
   XCircle,
 } from "lucide-react";
 
@@ -123,19 +127,49 @@ export default function BidderPage() {
     searchParams.get("riskLevel") || "High";
 
   const alertTitle =
-    searchParams.get("alert") || "Multiple verification concerns detected";
+    searchParams.get("alert") ||
+    "Multiple verification concerns detected";
+
+  // ============================================================
+  // REJECTION WORKFLOW STATE
+  // ============================================================
+
+  const [showRejectModal, setShowRejectModal] =
+    useState(false);
+
+  const [showNoticeEditor, setShowNoticeEditor] =
+    useState(false);
+
+  const [rejectionReason, setRejectionReason] =
+    useState(
+      "Minimum financial capacity requirement not satisfied"
+    );
+
+  const [rejectionDetails, setRejectionDetails] =
+    useState(
+      "The bidder submitted financial evidence indicating an annual turnover of ₹8.4 Cr against the tender requirement of ₹10 Cr. Additional evidence also indicates that the required previous experience threshold has not been established."
+    );
+
+  const [noticeText, setNoticeText] =
+    useState("");
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
 
-      {/* DEMO BANNER */}
+      {/* ======================================================
+          DEMO BANNER
+      ====================================================== */}
+
       <div className="border-b border-amber-200 bg-amber-50 px-6 py-2 text-center text-xs font-semibold tracking-wide text-amber-800">
         DEMO ENVIRONMENT — SYNTHETIC DATA
       </div>
 
       <main className="mx-auto max-w-[1600px] px-6 py-8">
 
-        {/* BACK */}
+        {/* ======================================================
+            BACK
+        ====================================================== */}
+
         <Link
           href="/risk-alerts"
           className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-slate-900"
@@ -144,12 +178,16 @@ export default function BidderPage() {
           Back to Risk Alerts
         </Link>
 
-        {/* HEADER */}
+        {/* ======================================================
+            HEADER
+        ====================================================== */}
+
         <section className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
 
             <div>
+
               <div className="mb-3 flex flex-wrap items-center gap-2">
 
                 <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-bold uppercase tracking-wide text-red-700">
@@ -189,6 +227,7 @@ export default function BidderPage() {
               </p>
 
               <div className="mt-2 flex items-end gap-2">
+
                 <span className="text-5xl font-bold text-red-700">
                   {riskScore}
                 </span>
@@ -196,6 +235,7 @@ export default function BidderPage() {
                 <span className="mb-1 text-sm font-semibold text-red-600">
                   / 100
                 </span>
+
               </div>
 
               <p className="mt-2 text-sm font-semibold text-red-700">
@@ -207,11 +247,13 @@ export default function BidderPage() {
           </div>
 
           {/* SOURCE ALERT */}
+
           <div className="mt-6 flex items-start gap-3 rounded-xl border border-indigo-200 bg-indigo-50 p-4">
 
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-indigo-600" />
 
             <div>
+
               <p className="text-sm font-bold text-indigo-900">
                 Investigation Trigger
               </p>
@@ -219,21 +261,31 @@ export default function BidderPage() {
               <p className="mt-1 text-sm text-indigo-800">
                 {alertTitle}
               </p>
+
             </div>
 
           </div>
 
         </section>
 
-        {/* KPI CARDS */}
+        {/* ======================================================
+            KPI CARDS
+        ====================================================== */}
+
         <section className="mb-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
 
+          {/* Compliance */}
+
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+
             <div className="flex items-center justify-between">
+
               <p className="text-sm font-medium text-slate-500">
                 Compliance Score
               </p>
+
               <ShieldCheck className="h-5 w-5 text-emerald-600" />
+
             </div>
 
             <p className="mt-3 text-3xl font-bold text-slate-950">
@@ -243,14 +295,21 @@ export default function BidderPage() {
             <p className="mt-1 text-xs font-semibold text-amber-600">
               Needs Review
             </p>
+
           </div>
 
+          {/* Risk */}
+
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+
             <div className="flex items-center justify-between">
+
               <p className="text-sm font-medium text-slate-500">
                 Risk Score
               </p>
+
               <AlertTriangle className="h-5 w-5 text-red-600" />
+
             </div>
 
             <p className="mt-3 text-3xl font-bold text-red-700">
@@ -260,14 +319,21 @@ export default function BidderPage() {
             <p className="mt-1 text-xs font-semibold text-red-600">
               {riskLevel} Risk
             </p>
+
           </div>
 
+          {/* Requirements */}
+
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+
             <div className="flex items-center justify-between">
+
               <p className="text-sm font-medium text-slate-500">
                 Requirements
               </p>
+
               <FileCheck2 className="h-5 w-5 text-indigo-600" />
+
             </div>
 
             <p className="mt-3 text-3xl font-bold text-slate-950">
@@ -277,14 +343,21 @@ export default function BidderPage() {
             <p className="mt-1 text-xs text-slate-500">
               Evaluated
             </p>
+
           </div>
 
+          {/* Documents */}
+
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+
             <div className="flex items-center justify-between">
+
               <p className="text-sm font-medium text-slate-500">
                 Documents
               </p>
+
               <FileText className="h-5 w-5 text-slate-600" />
+
             </div>
 
             <p className="mt-3 text-3xl font-bold text-slate-950">
@@ -294,20 +367,29 @@ export default function BidderPage() {
             <p className="mt-1 text-xs text-slate-500">
               Submitted
             </p>
+
           </div>
 
         </section>
 
-        {/* MAIN GRID */}
+        {/* ======================================================
+            MAIN GRID
+        ====================================================== */}
+
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
 
-          {/* LEFT */}
+          {/* ====================================================
+              LEFT COLUMN
+          ==================================================== */}
+
           <div className="space-y-6">
 
             {/* IDENTITY */}
+
             <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
 
               <div className="border-b border-slate-200 p-6">
+
                 <h2 className="text-lg font-bold text-slate-950">
                   Identity & Verification
                 </h2>
@@ -315,11 +397,15 @@ export default function BidderPage() {
                 <p className="mt-1 text-sm text-slate-500">
                   Cross-checks performed against bidder registration evidence.
                 </p>
+
               </div>
 
               <div className="grid gap-4 p-6 md:grid-cols-3">
 
+                {/* GST */}
+
                 <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+
                   <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">
                     GSTIN
                   </p>
@@ -329,12 +415,19 @@ export default function BidderPage() {
                   </p>
 
                   <div className="mt-3 flex items-center gap-2 text-sm font-semibold text-emerald-700">
+
                     <CheckCircle2 className="h-4 w-4" />
+
                     Verified
+
                   </div>
+
                 </div>
 
+                {/* UDYAM */}
+
                 <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+
                   <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">
                     Udyam
                   </p>
@@ -344,12 +437,19 @@ export default function BidderPage() {
                   </p>
 
                   <div className="mt-3 flex items-center gap-2 text-sm font-semibold text-emerald-700">
+
                     <CheckCircle2 className="h-4 w-4" />
+
                     Verified
+
                   </div>
+
                 </div>
 
+                {/* PAN */}
+
                 <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+
                   <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">
                     PAN
                   </p>
@@ -359,9 +459,13 @@ export default function BidderPage() {
                   </p>
 
                   <div className="mt-3 flex items-center gap-2 text-sm font-semibold text-emerald-700">
+
                     <CheckCircle2 className="h-4 w-4" />
+
                     Verified
+
                   </div>
+
                 </div>
 
               </div>
@@ -369,9 +473,11 @@ export default function BidderPage() {
             </section>
 
             {/* REQUIREMENTS */}
+
             <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
 
               <div className="border-b border-slate-200 p-6">
+
                 <h2 className="text-lg font-bold text-slate-950">
                   Evidence → Requirement Mapping
                 </h2>
@@ -379,6 +485,7 @@ export default function BidderPage() {
                 <p className="mt-1 text-sm text-slate-500">
                   AI-assisted mapping between tender requirements and bidder evidence.
                 </p>
+
               </div>
 
               <div className="overflow-x-auto">
@@ -386,6 +493,7 @@ export default function BidderPage() {
                 <table className="w-full min-w-[800px] text-left">
 
                   <thead className="bg-slate-50">
+
                     <tr className="border-b border-slate-200">
 
                       <th className="px-6 py-4 text-xs font-bold uppercase tracking-wide text-slate-500">
@@ -405,11 +513,13 @@ export default function BidderPage() {
                       </th>
 
                     </tr>
+
                   </thead>
 
                   <tbody>
 
                     {requirements.map((item) => (
+
                       <tr
                         key={item.requirement}
                         className="border-b border-slate-100 last:border-0"
@@ -428,6 +538,7 @@ export default function BidderPage() {
                         </td>
 
                         <td className="px-6 py-4">
+
                           <span
                             className={
                               "rounded-full border px-2.5 py-1 text-xs font-bold " +
@@ -436,9 +547,11 @@ export default function BidderPage() {
                           >
                             {item.status}
                           </span>
+
                         </td>
 
                       </tr>
+
                     ))}
 
                   </tbody>
@@ -450,6 +563,7 @@ export default function BidderPage() {
             </section>
 
             {/* CROSS DOCUMENT */}
+
             <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
               <h2 className="text-lg font-bold text-slate-950">
@@ -469,6 +583,7 @@ export default function BidderPage() {
                     <AlertTriangle className="mt-0.5 h-5 w-5 text-red-600" />
 
                     <div>
+
                       <p className="font-bold text-red-900">
                         Turnover Discrepancy
                       </p>
@@ -478,6 +593,7 @@ export default function BidderPage() {
                         statement reports ₹8.4 Cr, while another verification
                         source indicates ₹6.9 Cr.
                       </p>
+
                     </div>
 
                   </div>
@@ -491,6 +607,7 @@ export default function BidderPage() {
                     <AlertTriangle className="mt-0.5 h-5 w-5 text-amber-600" />
 
                     <div>
+
                       <p className="font-bold text-amber-900">
                         OEM Authorization Ambiguity
                       </p>
@@ -499,6 +616,7 @@ export default function BidderPage() {
                         Issuer identity and product scope require officer
                         verification before accepting the authorization.
                       </p>
+
                     </div>
 
                   </div>
@@ -510,9 +628,11 @@ export default function BidderPage() {
             </section>
 
             {/* DOCUMENTS */}
+
             <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
 
               <div className="border-b border-slate-200 p-6">
+
                 <h2 className="text-lg font-bold text-slate-950">
                   Document Intelligence
                 </h2>
@@ -520,11 +640,13 @@ export default function BidderPage() {
                 <p className="mt-1 text-sm text-slate-500">
                   AI extraction and verification confidence for submitted documents.
                 </p>
+
               </div>
 
               <div className="divide-y divide-slate-100">
 
                 {documents.map((document) => (
+
                   <div
                     key={document.name}
                     className="flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between"
@@ -533,10 +655,13 @@ export default function BidderPage() {
                     <div className="flex items-center gap-4">
 
                       <div className="rounded-xl bg-slate-100 p-3">
+
                         <FileText className="h-5 w-5 text-slate-600" />
+
                       </div>
 
                       <div>
+
                         <p className="font-semibold text-slate-900">
                           {document.name}
                         </p>
@@ -544,6 +669,7 @@ export default function BidderPage() {
                         <p className="mt-1 text-xs text-slate-500">
                           {document.type} document
                         </p>
+
                       </div>
 
                     </div>
@@ -551,6 +677,7 @@ export default function BidderPage() {
                     <div className="flex items-center gap-4">
 
                       <div className="text-right">
+
                         <p className="text-xs text-slate-500">
                           AI Confidence
                         </p>
@@ -558,6 +685,7 @@ export default function BidderPage() {
                         <p className="font-bold text-slate-900">
                           {document.confidence}%
                         </p>
+
                       </div>
 
                       <span
@@ -572,6 +700,7 @@ export default function BidderPage() {
                     </div>
 
                   </div>
+
                 ))}
 
               </div>
@@ -580,10 +709,14 @@ export default function BidderPage() {
 
           </div>
 
-          {/* RIGHT */}
+          {/* ====================================================
+              RIGHT COLUMN
+          ==================================================== */}
+
           <aside className="space-y-6">
 
             {/* RISK */}
+
             <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
               <h2 className="text-lg font-bold text-slate-950">
@@ -604,64 +737,100 @@ export default function BidderPage() {
 
               <div className="mt-6 space-y-5">
 
+                {/* Financial */}
+
                 <div>
+
                   <div className="mb-2 flex justify-between text-sm">
+
                     <span className="font-medium text-slate-600">
                       Financial discrepancy
                     </span>
+
                     <span className="font-bold text-red-600">
                       88%
                     </span>
+
                   </div>
 
                   <div className="h-2 rounded-full bg-slate-100">
+
                     <div className="h-2 w-[88%] rounded-full bg-red-500" />
+
                   </div>
+
                 </div>
 
+                {/* Experience */}
+
                 <div>
+
                   <div className="mb-2 flex justify-between text-sm">
+
                     <span className="font-medium text-slate-600">
                       Experience threshold
                     </span>
+
                     <span className="font-bold text-amber-600">
                       64%
                     </span>
+
                   </div>
 
                   <div className="h-2 rounded-full bg-slate-100">
+
                     <div className="h-2 w-[64%] rounded-full bg-amber-500" />
+
                   </div>
+
                 </div>
 
+                {/* OEM */}
+
                 <div>
+
                   <div className="mb-2 flex justify-between text-sm">
+
                     <span className="font-medium text-slate-600">
                       OEM ambiguity
                     </span>
+
                     <span className="font-bold text-amber-600">
                       58%
                     </span>
+
                   </div>
 
                   <div className="h-2 rounded-full bg-slate-100">
+
                     <div className="h-2 w-[58%] rounded-full bg-amber-500" />
+
                   </div>
+
                 </div>
 
+                {/* Blacklist */}
+
                 <div>
+
                   <div className="mb-2 flex justify-between text-sm">
+
                     <span className="font-medium text-slate-600">
                       Blacklist screening
                     </span>
+
                     <span className="font-bold text-emerald-600">
                       15%
                     </span>
+
                   </div>
 
                   <div className="h-2 rounded-full bg-slate-100">
+
                     <div className="h-2 w-[15%] rounded-full bg-emerald-500" />
+
                   </div>
+
                 </div>
 
               </div>
@@ -669,6 +838,7 @@ export default function BidderPage() {
             </section>
 
             {/* AI FINDINGS */}
+
             <section className="rounded-2xl border border-indigo-200 bg-indigo-50 p-6">
 
               <h2 className="text-lg font-bold text-indigo-950">
@@ -678,31 +848,43 @@ export default function BidderPage() {
               <div className="mt-5 space-y-4">
 
                 <div className="flex gap-3">
+
                   <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-indigo-600" />
+
                   <p className="text-sm leading-6 text-indigo-900">
                     Turnover requirement may not be satisfied based on submitted evidence.
                   </p>
+
                 </div>
 
                 <div className="flex gap-3">
+
                   <FileCheck2 className="mt-0.5 h-5 w-5 shrink-0 text-indigo-600" />
+
                   <p className="text-sm leading-6 text-indigo-900">
                     Experience evidence requires procurement officer review.
                   </p>
+
                 </div>
 
                 <div className="flex gap-3">
+
                   <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-indigo-600" />
+
                   <p className="text-sm leading-6 text-indigo-900">
                     No blacklist match detected in the current screening dataset.
                   </p>
+
                 </div>
 
               </div>
 
             </section>
 
-            {/* DECISION */}
+            {/* ==================================================
+                OFFICER DECISION
+            ================================================== */}
+
             <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
               <h2 className="text-lg font-bold text-slate-950">
@@ -712,9 +894,11 @@ export default function BidderPage() {
               <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4">
 
                 <div className="flex items-center gap-3">
+
                   <UserCheck className="h-5 w-5 text-amber-600" />
 
                   <div>
+
                     <p className="font-bold text-amber-900">
                       Review Required
                     </p>
@@ -722,19 +906,36 @@ export default function BidderPage() {
                     <p className="mt-1 text-xs text-amber-700">
                       AI recommendation only
                     </p>
+
                   </div>
+
                 </div>
 
               </div>
 
               <div className="mt-5 space-y-3">
 
-                <button className="w-full rounded-xl bg-slate-950 px-4 py-3 text-sm font-bold text-white transition hover:bg-slate-800">
+                <button
+                  type="button"
+                  className="w-full rounded-xl bg-slate-950 px-4 py-3 text-sm font-bold text-white transition hover:bg-slate-800"
+                >
                   Mark for Detailed Review
                 </button>
 
-                <button className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
+                <button
+                  type="button"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+                >
                   Request Clarification
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowRejectModal(true)}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700 transition hover:bg-red-100"
+                >
+                  <XCircle className="h-4 w-4" />
+                  Reject Bidder
                 </button>
 
               </div>
@@ -742,6 +943,7 @@ export default function BidderPage() {
             </section>
 
             {/* ACTIVITY */}
+
             <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
 
               <h2 className="text-lg font-bold text-slate-950">
@@ -751,39 +953,57 @@ export default function BidderPage() {
               <div className="mt-5 space-y-5">
 
                 <div className="flex gap-3">
+
                   <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+
                   <div>
+
                     <p className="text-sm font-semibold text-slate-900">
                       GST verification completed
                     </p>
+
                     <p className="text-xs text-slate-500">
                       12 min ago
                     </p>
+
                   </div>
+
                 </div>
 
                 <div className="flex gap-3">
+
                   <XCircle className="h-5 w-5 text-red-600" />
+
                   <div>
+
                     <p className="text-sm font-semibold text-slate-900">
                       Financial discrepancy detected
                     </p>
+
                     <p className="text-xs text-slate-500">
                       9 min ago
                     </p>
+
                   </div>
+
                 </div>
 
                 <div className="flex gap-3">
+
                   <AlertTriangle className="h-5 w-5 text-amber-600" />
+
                   <div>
+
                     <p className="text-sm font-semibold text-slate-900">
                       Risk score updated to {riskScore}
                     </p>
+
                     <p className="text-xs text-slate-500">
                       6 min ago
                     </p>
+
                   </div>
+
                 </div>
 
               </div>
@@ -801,15 +1021,363 @@ export default function BidderPage() {
 
         </div>
 
-        {/* DISCLAIMER */}
+        {/* ======================================================
+            DISCLAIMER
+        ====================================================== */}
+
         <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 text-center text-xs leading-5 text-slate-500 shadow-sm">
-          ProcureAI provides decision-support intelligence only. Risk scores
-          and AI findings do not constitute proof of fraud, automatic
-          disqualification, or a final procurement decision. Human officer
-          review remains mandatory.
+
+          TenderShield AI provides decision-support intelligence only.
+          Risk scores and AI findings do not constitute proof of fraud,
+          automatic disqualification, or a final procurement decision.
+          Human officer review remains mandatory.
+
         </div>
 
       </main>
+
+      {/* ========================================================
+          REJECTION WORKFLOW MODAL
+      ======================================================== */}
+
+      {showRejectModal && (
+
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-950/50 p-4">
+
+          <div className="w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+
+            {/* MODAL HEADER */}
+
+            <div className="flex items-start justify-between border-b border-slate-200 px-6 py-5">
+
+              <div>
+
+                <div className="flex items-center gap-2">
+
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-50">
+
+                    <XCircle className="h-5 w-5 text-red-600" />
+
+                  </div>
+
+                  <div>
+
+                    <h2 className="text-lg font-bold text-slate-950">
+                      Reject Bidder
+                    </h2>
+
+                    <p className="text-xs text-slate-500">
+                      Officer decision required
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowRejectModal(false)}
+                className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                aria-label="Close rejection dialog"
+              >
+                <X className="h-5 w-5" />
+              </button>
+
+            </div>
+
+            {/* MODAL CONTENT */}
+
+            <div className="space-y-5 p-6">
+
+              {/* AI WARNING */}
+
+              <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+
+                <div className="flex gap-3">
+
+                  <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+
+                  <div>
+
+                    <p className="text-sm font-bold text-amber-900">
+                      AI-assisted decision support
+                    </p>
+
+                    <p className="mt-1 text-xs leading-5 text-amber-800">
+                      TenderShield AI has identified evidence that may support
+                      rejection. The final decision must be reviewed and
+                      confirmed by the procurement officer.
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* REJECTION REASON */}
+
+              <div>
+
+                <label className="text-sm font-bold text-slate-800">
+                  Rejection Reason
+                </label>
+
+                <select
+                  value={rejectionReason}
+                  onChange={(event) =>
+                    setRejectionReason(event.target.value)
+                  }
+                  className="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-100"
+                >
+
+                  <option>
+                    Minimum financial capacity requirement not satisfied
+                  </option>
+
+                  <option>
+                    Mandatory eligibility requirement not satisfied
+                  </option>
+
+                  <option>
+                    Required previous experience not established
+                  </option>
+
+                  <option>
+                    Required documentation not provided
+                  </option>
+
+                  <option>
+                    Other compliance requirement not satisfied
+                  </option>
+
+                </select>
+
+              </div>
+
+              {/* OFFICER DETAILS */}
+
+              <div>
+
+                <label className="text-sm font-bold text-slate-800">
+                  Officer Notes / Supporting Details
+                </label>
+
+                <textarea
+                  value={rejectionDetails}
+                  onChange={(event) =>
+                    setRejectionDetails(event.target.value)
+                  }
+                  rows={5}
+                  className="mt-2 w-full resize-none rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm leading-6 text-slate-800 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-100"
+                />
+
+              </div>
+
+              {/* ==================================================
+                  AI NOTICE GENERATOR
+              ================================================== */}
+
+              <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-5">
+
+                <div className="flex items-start gap-3">
+
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
+
+                    <Sparkles className="h-5 w-5 text-indigo-600" />
+
+                  </div>
+
+                  <div className="flex-1">
+
+                    <p className="text-sm font-bold text-indigo-950">
+                      AI Generated GeM Notice
+                    </p>
+
+                    <p className="mt-1 text-xs leading-5 text-indigo-700">
+                      Generate a structured draft notice using the selected
+                      rejection reason and verified evidence. The draft
+                      requires officer review before use.
+                    </p>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+
+                        const generatedNotice = `Subject: Bid Rejection Notice — ${tender}
+
+Dear ${bidder},
+
+This is to inform you that your bid submitted against Tender ${tender} has been reviewed as part of the procurement evaluation process.
+
+Reason for rejection:
+${rejectionReason}
+
+Supporting details:
+${rejectionDetails}
+
+The above determination is based on the compliance evidence available during evaluation. This notice is generated as a draft for procurement officer review and approval.
+
+Tender: ${tender}
+Bidder: ${bidder}
+
+Regards,
+Procurement Officer
+TenderShield AI — Draft for Officer Review`;
+
+                        setNoticeText(generatedNotice);
+                        setShowNoticeEditor(true);
+
+                      }}
+                      className="mt-4 flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-indigo-700"
+                    >
+
+                      <FilePenLine className="h-4 w-4" />
+
+                      Generate Notice Draft
+
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* ==================================================
+                  GENERATED NOTICE
+              ================================================== */}
+
+              {showNoticeEditor && (
+
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+
+                  <div className="mb-3 flex items-center justify-between">
+
+                    <div>
+
+                      <p className="text-sm font-bold text-slate-900">
+                        Generated GeM Notice Draft
+                      </p>
+
+                      <p className="mt-1 text-xs text-slate-500">
+                        Edit the draft before any official use.
+                      </p>
+
+                    </div>
+
+                    <FileText className="h-5 w-5 text-slate-400" />
+
+                  </div>
+
+                  <textarea
+                    value={noticeText}
+                    onChange={(event) =>
+                      setNoticeText(event.target.value)
+                    }
+                    rows={12}
+                    className="w-full resize-none rounded-xl border border-slate-300 bg-white px-4 py-3 font-mono text-xs leading-5 text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                  />
+
+                  <div className="mt-3 flex flex-wrap gap-2">
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowNoticeEditor(false);
+                        setNoticeText("");
+                      }}
+                      className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-600 transition hover:bg-slate-100"
+                    >
+                      Clear Draft
+                    </button>
+
+                    <button
+                      type="button"
+                      className="rounded-lg bg-slate-950 px-4 py-2 text-xs font-bold text-white transition hover:bg-slate-800"
+                    >
+                      Save Draft
+                    </button>
+
+                  </div>
+
+                </div>
+
+              )}
+
+            </div>
+
+            {/* ==================================================
+                MODAL FOOTER
+            ================================================== */}
+
+            <div className="flex flex-col-reverse gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+
+              <button
+                type="button"
+                onClick={() => setShowRejectModal(false)}
+                className="rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+
+                  let existingAuditEvents = [];
+
+                  try {
+                    existingAuditEvents = JSON.parse(
+                      window.localStorage.getItem(
+                        "tendershield_audit_events"
+                      ) || "[]"
+                    );
+                  } catch {
+                    existingAuditEvents = [];
+                  }
+
+                  const auditEvent = {
+                    id: `AUD-${Date.now()}`,
+                    timestamp: new Date().toISOString(),
+                    action: "Bidder Rejected",
+                    category: "Officer Decision",
+                    officer: "Procurement Officer",
+                    bidder,
+                    tender,
+                    reason: rejectionReason,
+                    details: rejectionDetails,
+                    riskScore,
+                    noticeGenerated: Boolean(noticeText),
+                    source: "TenderShield AI",
+                  };
+
+                  window.localStorage.setItem(
+                    "tendershield_audit_events",
+                    JSON.stringify([
+                      auditEvent,
+                      ...existingAuditEvents,
+                    ])
+                  );
+
+                  setShowRejectModal(false);
+                  setShowNoticeEditor(false);
+
+                }}
+                className="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-red-700"
+              >
+                Confirm Rejection
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
 
     </div>
   );

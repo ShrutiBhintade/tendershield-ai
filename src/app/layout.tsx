@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
+import RoleGuard from "@/components/auth/RoleGuard";
+import PortalShell from "@/components/layout/PortalShell";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -17,13 +18,22 @@ export const metadata: Metadata = {
   description:
     "AI-powered procurement integrity, verification and risk monitoring platform.",
 };
-export default function RootLayout({ children }: LayoutProps<"/">) {
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <RoleGuard>
+  <PortalShell>{children}</PortalShell>
+</RoleGuard>
+      </body>
     </html>
   );
 }

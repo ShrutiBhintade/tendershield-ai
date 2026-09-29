@@ -1,15 +1,18 @@
 "use client";
-
 import Link from "next/link";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   AlertTriangle,
   ArrowLeft,
   CheckCircle2,
   FileCheck2,
+  FilePenLine,
   FileText,
   ShieldCheck,
+  Sparkles,
   UserCheck,
+  X,
   XCircle,
 } from "lucide-react";
 
@@ -107,7 +110,7 @@ function statusBadge(status: string) {
   return "bg-slate-100 text-slate-700 border-slate-200";
 }
 
-export default function BidderPage() {
+function BidderInvestigationPage() {
   const searchParams = useSearchParams();
 
   const bidder =
@@ -118,7 +121,19 @@ export default function BidderPage() {
 
   const riskScore =
     searchParams.get("riskScore") || "72";
+const [showRejectModal, setShowRejectModal] = useState(false);
 
+const [showNoticeEditor, setShowNoticeEditor] = useState(false);
+
+const [rejectionReason, setRejectionReason] = useState(
+  "Minimum financial capacity requirement not satisfied"
+);
+
+const [rejectionDetails, setRejectionDetails] = useState(
+  "The bidder submitted financial evidence indicating an annual turnover of ₹8.4 Cr against the tender requirement of ₹10 Cr. Additional evidence also indicates that the required previous experience threshold has not been established."
+);
+
+const [noticeText, setNoticeText] = useState("");
   const riskLevel =
     searchParams.get("riskLevel") || "High";
 
@@ -728,16 +743,30 @@ export default function BidderPage() {
               </div>
 
               <div className="mt-5 space-y-3">
+  <button
+    type="button"
+    className="w-full rounded-xl bg-slate-950 px-4 py-3 text-sm font-bold text-white transition hover:bg-slate-800"
+  >
+    Mark for Detailed Review
+  </button>
 
-                <button className="w-full rounded-xl bg-slate-950 px-4 py-3 text-sm font-bold text-white transition hover:bg-slate-800">
-                  Mark for Detailed Review
-                </button>
+  <button
+    type="button"
+    className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+  >
+    Request Clarification
+  </button>
 
-                <button className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
-                  Request Clarification
-                </button>
-
-              </div>
+  <button
+    type="button"
+    onClick={() => setShowRejectModal(true)}
+    
+    className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700 transition hover:bg-red-100"
+  >
+    <XCircle className="h-4 w-4" />
+    Reject Bidder
+  </button>
+</div>
 
             </section>
 
@@ -810,7 +839,277 @@ export default function BidderPage() {
         </div>
 
       </main>
+{showRejectModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4">
+    <div className="w-full max-w-3xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+      <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+        <div>
+          <div className="flex items-center gap-2">
+            <XCircle className="h-5 w-5 text-red-600" />
+            <h2 className="text-lg font-bold text-slate-950">
+              Reject Bidder
+            </h2>
+          </div>
 
+          <p className="mt-1 text-sm text-slate-500">
+            Officer decision for {bidder}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            setShowRejectModal(false);
+            setShowNoticeEditor(false);
+          }}
+          className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </div>
+
+      <div className="max-h-[75vh] overflow-y-auto p-6">
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+          <div className="flex gap-3">
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+
+            <div>
+              <p className="text-sm font-bold text-amber-900">
+                AI-Assisted Decision Support
+              </p>
+
+              <p className="mt-1 text-xs leading-5 text-amber-800">
+                TenderShield AI provides evidence-based decision support.
+                The final rejection decision must be made and approved by
+                the procurement officer.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 space-y-5">
+          <div>
+            <label className="mb-2 block text-sm font-bold text-slate-800">
+              Rejection Reason
+            </label>
+
+            <select
+              value={rejectionReason}
+              onChange={(event) =>
+                setRejectionReason(event.target.value)
+              }
+              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+            >
+              <option>
+                Minimum financial capacity requirement not satisfied
+              </option>
+              <option>
+                Previous experience requirement not satisfied
+              </option>
+              <option>
+                Required documentation not provided
+              </option>
+              <option>
+                Verification discrepancy identified
+              </option>
+              <option>
+                Other compliance requirement not satisfied
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-bold text-slate-800">
+              Officer Notes / Supporting Details
+            </label>
+
+            <textarea
+              value={rejectionDetails}
+              onChange={(event) =>
+                setRejectionDetails(event.target.value)
+              }
+              rows={5}
+              className="w-full resize-none rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm leading-6 text-slate-800 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+            />
+          </div>
+
+          <div className="rounded-xl border border-blue-200 bg-blue-50 p-5">
+            <div className="flex items-start gap-3">
+              <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-blue-600" />
+
+              <div className="flex-1">
+                <p className="text-sm font-bold text-blue-950">
+                  AI Generated GeM Notice
+                </p>
+
+                <p className="mt-1 text-xs leading-5 text-blue-800">
+                  TenderShield AI can prepare a draft notice using the
+                  selected rejection reason and supporting evidence.
+                  Officer review and approval are required before sending.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                const draft = `Subject: Bid Rejection Notice — ${tender}
+
+Dear ${bidder},
+
+This is to inform you that your bid submitted against Tender ${tender} has been reviewed as part of the procurement evaluation process.
+
+Reason for rejection:
+${rejectionReason}
+
+Supporting details:
+${rejectionDetails}
+
+The above determination is based on the compliance evidence available during evaluation. This notice is generated as a draft for procurement officer review and approval.
+
+Tender: ${tender}
+Bidder: ${bidder}
+
+Regards,
+Procurement Officer
+TenderShield AI — Draft for Officer Review`;
+
+                setNoticeText(draft);
+                setShowNoticeEditor(true);
+              }}
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-blue-700"
+            >
+              <Sparkles className="h-4 w-4" />
+              Generate Notice Draft
+            </button>
+          </div>
+
+          {showNoticeEditor && (
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FilePenLine className="h-4 w-4 text-slate-600" />
+
+                  <p className="text-sm font-bold text-slate-900">
+                    Editable Notice Draft
+                  </p>
+                </div>
+
+                <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-amber-700">
+                  Officer Review Required
+                </span>
+              </div>
+
+              <textarea
+                value={noticeText}
+                onChange={(event) =>
+                  setNoticeText(event.target.value)
+                }
+                rows={16}
+                className="w-full resize-none rounded-xl border border-slate-300 bg-white px-4 py-3 font-mono text-xs leading-5 text-slate-700 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+              />
+
+              <div className="mt-3 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNoticeText("");
+                    setShowNoticeEditor(false);
+                  }}
+                  className="rounded-lg px-3 py-2 text-xs font-bold text-slate-600 transition hover:bg-white hover:text-slate-900"
+                >
+                  Clear Draft
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-6 py-4">
+        <button
+          type="button"
+          onClick={() => {
+            setShowRejectModal(false);
+            setShowNoticeEditor(false);
+          }}
+          className="rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+        >
+          Cancel
+        </button>
+
+        <button
+  type="button"
+  onClick={() => {
+    const existingAuditEvents = JSON.parse(
+      window.localStorage.getItem("tendershield_audit_events") || "[]"
+    );
+
+    const auditEvent = {
+  id: `AUD-${Date.now()}`,
+  timestamp: new Date().toISOString(),
+
+  action: "Bidder Rejected",
+  description: `Bidder ${bidder} was rejected by the procurement officer after review.`,
+
+  actor: "Procurement Officer",
+  role: "Procurement Officer",
+
+  entity: bidder,
+  entityType: "Bidder",
+
+  bidder: bidder,
+  tender: tender,
+
+  result: "Critical",
+  reference: tender,
+
+  reason: rejectionReason,
+  details: rejectionDetails,
+  riskScore: riskScore,
+
+  noticeGenerated: Boolean(noticeText),
+
+  source: "TenderShield AI",
+};
+    window.localStorage.setItem(
+      "tendershield_audit_events",
+      JSON.stringify([
+        auditEvent,
+        ...existingAuditEvents,
+      ])
+    );
+
+    setShowRejectModal(false);
+    setShowNoticeEditor(false);
+  }}
+  className="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-red-700"
+>
+  Confirm Rejection
+</button>
+      </div>
     </div>
+  </div>
+)}
+    </div>
+    );
+}
+
+export default function BidderPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-slate-50">
+          <div className="text-center">
+            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-slate-300 border-t-slate-900" />
+            <p className="mt-4 text-sm font-medium text-slate-600">
+              Loading bidder investigation...
+            </p>
+          </div>
+        </div>
+      }
+    >
+      <BidderInvestigationPage />
+    </Suspense>
   );
 }

@@ -9,11 +9,13 @@ export default function BidderShell({
   children: ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen overflow-x-hidden bg-slate-50">
       <BidderSidebar />
 
       <main className="min-h-screen lg:pl-64">
-        {children}
+        <div className="pt-16 lg:pt-0">
+          {children}
+        </div>
       </main>
     </div>
   );

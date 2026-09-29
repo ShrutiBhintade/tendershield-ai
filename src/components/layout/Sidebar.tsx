@@ -1,4 +1,6 @@
 "use client";
+
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import {
   AlertTriangle,
@@ -8,11 +10,13 @@ import {
   FileText,
   LayoutDashboard,
   LogOut,
+  Menu,
   ScrollText,
   Settings,
   ShieldCheck,
   Sparkles,
   Users,
+  X,
 } from "lucide-react";
 
 const navigation = [
@@ -25,10 +29,10 @@ const navigation = [
   { name: "Documents", href: "/documents", icon: FileText },
   { name: "Analytics", href: "/analytics", icon: BarChart3 },
   {
-  name: "Advanced AI",
-  href: "/advanced-intelligence",
-  icon: Sparkles,
-},
+    name: "Advanced AI",
+    href: "/advanced-intelligence",
+    icon: Sparkles,
+  },
 ];
 
 const systemNavigation = [
@@ -38,29 +42,21 @@ const systemNavigation = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  return (
-    <aside className="fixed left-0 top-0 z-[100] hidden h-screen w-64 border-r border-slate-200 bg-white lg:flex lg:flex-col">
-      {/* BRAND */}
-      <div className="flex h-20 items-center border-b border-slate-200 px-6">
-        <a href="/dashboard" className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900">
-            <ShieldCheck className="h-6 w-6 text-white" />
-          </div>
+  const isActive = (href: string) => {
+    return (
+      pathname === href ||
+      (href !== "/dashboard" && pathname.startsWith(`${href}/`))
+    );
+  };
 
-          <div>
-            <div className="text-lg font-bold tracking-tight text-slate-900">
-              TenderShield AI
-            </div>
+  const closeMobile = () => {
+    setMobileOpen(false);
+  };
 
-            <div className="text-[10px] font-semibold tracking-widest text-slate-400">
-              OFFICER PLATFORM
-            </div>
-          </div>
-        </a>
-      </div>
-
-      {/* NAVIGATION */}
+  const navigationContent = (
+    <>
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">
           Intelligence
@@ -69,16 +65,13 @@ export default function Sidebar() {
         <nav className="space-y-1">
           {navigation.map((item) => {
             const Icon = item.icon;
-
-            const active =
-              pathname === item.href ||
-              (item.href !== "/dashboard" &&
-                pathname.startsWith(item.href + "/"));
+            const active = isActive(item.href);
 
             return (
               <a
                 key={item.href}
                 href={item.href}
+                onClick={closeMobile}
                 className={
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all " +
                   (active
@@ -100,15 +93,13 @@ export default function Sidebar() {
         <nav className="space-y-1">
           {systemNavigation.map((item) => {
             const Icon = item.icon;
-
-            const active =
-              pathname === item.href ||
-              pathname.startsWith(item.href + "/");
+            const active = isActive(item.href);
 
             return (
               <a
                 key={item.href}
                 href={item.href}
+                onClick={closeMobile}
                 className={
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all " +
                   (active
@@ -123,10 +114,10 @@ export default function Sidebar() {
           })}
         </nav>
 
-        {/* SWITCH PORTAL */}
         <div className="mt-8 border-t border-slate-100 pt-6">
           <a
             href="/login"
+            onClick={closeMobile}
             className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
           >
             <LogOut className="h-4 w-4 shrink-0" />
@@ -135,7 +126,6 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* OFFICER CARD */}
       <div className="border-t border-slate-200 p-4">
         <div className="rounded-lg bg-slate-50 p-3">
           <p className="text-xs font-semibold text-slate-700">
@@ -152,6 +142,96 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile menu button */}
+      <button
+        type="button"
+        onClick={() => setMobileOpen(true)}
+        aria-label="Open officer navigation"
+        className="fixed left-4 top-4 z-[120] flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 lg:hidden"
+      >
+        <Menu className="h-5 w-5" />
+      </button>
+
+      {/* Desktop sidebar */}
+      <aside className="fixed left-0 top-0 z-[100] hidden h-screen w-64 border-r border-slate-200 bg-white lg:flex lg:flex-col">
+        {/* Brand */}
+        <div className="flex h-20 shrink-0 items-center border-b border-slate-200 px-6">
+          <a href="/dashboard" className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-900">
+              <ShieldCheck className="h-6 w-6 text-white" />
+            </div>
+
+            <div>
+              <div className="text-lg font-bold tracking-tight text-slate-900">
+                TenderShield AI
+              </div>
+
+              <div className="text-[10px] font-semibold tracking-widest text-slate-400">
+                OFFICER PLATFORM
+              </div>
+            </div>
+          </a>
+        </div>
+
+        {navigationContent}
+      </aside>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <button
+          type="button"
+          aria-label="Close officer navigation"
+          onClick={closeMobile}
+          className="fixed inset-0 z-[130] bg-slate-950/30 lg:hidden"
+        />
+      )}
+
+      {/* Mobile drawer */}
+      <aside
+        className={
+          "fixed left-0 top-0 z-[140] flex h-screen w-[min(82vw,20rem)] flex-col border-r border-slate-200 bg-white shadow-xl transition-transform duration-200 lg:hidden " +
+          (mobileOpen ? "translate-x-0" : "-translate-x-full")
+        }
+      >
+        {/* Mobile brand */}
+        <div className="flex h-20 shrink-0 items-center justify-between border-b border-slate-200 px-5">
+          <a
+            href="/dashboard"
+            onClick={closeMobile}
+            className="flex min-w-0 items-center gap-3"
+          >
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-900">
+              <ShieldCheck className="h-5 w-5 text-white" />
+            </div>
+
+            <div className="min-w-0">
+              <div className="truncate text-base font-bold tracking-tight text-slate-900">
+                TenderShield AI
+              </div>
+
+              <div className="text-[9px] font-semibold tracking-widest text-slate-400">
+                OFFICER PLATFORM
+              </div>
+            </div>
+          </a>
+
+          <button
+            type="button"
+            onClick={closeMobile}
+            aria-label="Close navigation"
+            className="ml-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {navigationContent}
+      </aside>
+    </>
   );
 }

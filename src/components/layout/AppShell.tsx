@@ -13,9 +13,6 @@ export default function AppShell({
 }) {
   const shellAlreadyActive = useContext(AppShellContext);
 
-  // Some existing pages already contain AppShell.
-  // If the global shell is already wrapping the page,
-  // don't render a second sidebar/header.
   if (shellAlreadyActive) {
     return <>{children}</>;
   }
@@ -28,7 +25,7 @@ export default function AppShell({
         <main className="relative min-h-screen lg:pl-64">
           <Header />
 
-          <div className="p-5 lg:p-8">
+          <div className="p-4 pt-16 sm:p-5 sm:pt-16 lg:p-8 lg:pt-8">
             {children}
           </div>
         </main>

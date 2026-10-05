@@ -1,4 +1,4 @@
-# 🛡️ TenderShield AI
+# TenderShield AI
 
 ### AI-Powered Procurement Integrity & Risk Monitoring Platform
 
@@ -10,9 +10,8 @@
 [![AI/ML](https://img.shields.io/badge/AI%2FML-Explainable_Risk_Intelligence-7C3AED?style=for-the-badge)](#)
 [![Status](https://img.shields.io/badge/Status-SIH_2026_Prototype-16A34A?style=for-the-badge)](#)
 
----
 
-## 🎯 What is TenderShield AI?
+##  What is TenderShield AI?
 
 Public procurement involves thousands of tender requirements, bidder documents, eligibility conditions and verification steps.
 
@@ -26,26 +25,24 @@ The real challenge is answering:
 
 It combines:
 
-- 📋 Tender requirement management
-- 📄 Bidder document handling
-- 🔍 Evidence-based compliance verification
-- 🤖 Explainable AI-assisted risk intelligence
-- ⚠️ Risk and anomaly detection
-- 👤 Bidder investigation
-- 📊 Procurement analytics
-- 🧾 Audit trails
-- ✍️ Editable tender / GeM notice generation
-- 👥 Dedicated Officer and Bidder portals
+- Tender requirement management
+- Bidder document handling
+- Evidence-based compliance verification
+- Explainable AI-assisted risk intelligence
+- Risk and anomaly detection
+- Bidder investigation
+- Procurement analytics
+- Audit trails
+- Editable tender / GeM notice generation
+- Dedicated Officer and Bidder portals
 
 The result is an **evidence-to-decision workflow** that helps officers evaluate bids faster while keeping the final procurement decision under human control.
 
----
 
-# 💡 The Core Idea
+#  The Core Idea
 
 TenderShield follows a simple but powerful chain:
 
-```text
 Tender Requirement
         ↓
 Bidder Submission

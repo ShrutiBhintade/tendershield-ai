@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🛡️ TenderShield AI
 
-## Getting Started
+### AI-Powered Procurement Integrity & Risk Monitoring Platform
 
-First, run the development server:
+> **From tender requirements to evidence-backed decisions — TenderShield helps procurement officers see the risks before they become procurement problems.**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com/)
+[![AI/ML](https://img.shields.io/badge/AI%2FML-Explainable_Risk_Intelligence-7C3AED?style=for-the-badge)](#)
+[![Status](https://img.shields.io/badge/Status-SIH_2026_Prototype-16A34A?style=for-the-badge)](#)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🎯 What is TenderShield AI?
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Public procurement involves thousands of tender requirements, bidder documents, eligibility conditions and verification steps.
 
-## Learn More
+The challenge is not simply **collecting documents**.
 
-To learn more about Next.js, take a look at the following resources:
+The real challenge is answering:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+> **Does the evidence submitted by a bidder actually satisfy the tender requirement — and are there risks hidden within that evidence?**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**TenderShield AI** is designed to help procurement officers answer that question.
 
-## Deploy on Vercel
+It combines:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- 📋 Tender requirement management
+- 📄 Bidder document handling
+- 🔍 Evidence-based compliance verification
+- 🤖 Explainable AI-assisted risk intelligence
+- ⚠️ Risk and anomaly detection
+- 👤 Bidder investigation
+- 📊 Procurement analytics
+- 🧾 Audit trails
+- ✍️ Editable tender / GeM notice generation
+- 👥 Dedicated Officer and Bidder portals
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The result is an **evidence-to-decision workflow** that helps officers evaluate bids faster while keeping the final procurement decision under human control.
+
+---
+
+# 💡 The Core Idea
+
+TenderShield follows a simple but powerful chain:
+
+```text
+Tender Requirement
+        ↓
+Bidder Submission
+        ↓
+Document & Evidence Analysis
+        ↓
+Compliance Verification
+        ↓
+Explainable AI Findings
+        ↓
+Risk Intelligence
+        ↓
+Officer Investigation
+        ↓
+Human Decision
+        ↓
+Audit Trail
